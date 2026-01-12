@@ -1,4 +1,4 @@
-/* Registration.css - Matching Login Design */
+/* Registration.css - Clean, modern, and matches Login page */
 
 .registration-container {
   display: flex;
@@ -36,17 +36,48 @@
   font-size: 28px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .subtitle {
   text-align: center;
   color: #666;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   font-size: 16px;
 }
 
-/* FORM */
+/* ✅ Role selection */
+.role-selection {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.role-selection label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.role-selection input {
+  accent-color: #667eea;
+}
+
+.role-selection label:hover {
+  border-color: #667eea;
+  background: #f3f5ff;
+}
+
+/* Form */
 .registration-form {
   display: flex;
   flex-direction: column;
@@ -81,9 +112,9 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
-/* BUTTON */
+/* Submit button */
 .submit-btn {
-  margin-top: 10px;
+  margin-top: 12px;
   padding: 14px;
   background: #667eea;
   color: white;
@@ -101,15 +132,22 @@
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
-/* MESSAGE */
+/* Messages */
 .message {
   text-align: center;
-  margin-top: 16px;
-  font-size: 14px;
-  color: green;
+  margin: 20px 0;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
-/* SWITCH */
+/* Error */
+.message {
+  color: #d32f2f;
+  background: #ffebee;
+}
+
+/* Footer text */
 .switch-text {
   text-align: center;
   margin-top: 24px;
@@ -125,6 +163,7 @@
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
+  font-size: inherit;
 }
 
 .link-btn:hover {

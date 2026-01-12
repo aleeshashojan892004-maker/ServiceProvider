@@ -2,29 +2,39 @@ import { useState } from "react";
 import "./Login.css";
 
 function Login({ switchToRegister }) {
+  const [role, setRole] = useState("user");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const payload = {
+      email,
+      password,
+      role,
+    };
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.detail || "Login failed");
+        setMessage(data.detail || "Login failed");
         return;
       }
 
-      alert("Login successful");
+      setMessage("Login successful 🎉");
+      // later: save token / redirect
     } catch (err) {
-      alert("Server error");
+      console.error("Login error:", err);
+      setMessage("Server error");
     }
   };
 
@@ -32,14 +42,42 @@ function Login({ switchToRegister }) {
     <div className="login-container">
       <div className="login-card">
         <h2 className="title">Welcome Back</h2>
-        <p className="subtitle">Login to continue</p>
+        <p className="subtitle">
+          Login as a {role === "user" ? "User" : "Service Provider"}
+        </p>
+
+        {/* Role Selection */}
+        <div className="role-selection">
+          <label>
+            <input
+              type="radio"
+              name="role"
+              value="user"
+              checked={role === "user"}
+              onChange={() => setRole("user")}
+            />
+            User
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="role"
+              value="provider"
+              checked={role === "provider"}
+              onChange={() => setRole("provider")}
+            />
+            Service Provider
+          </label>
+        </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="input-group">
             <label>Email</label>
             <input
               type="email"
-              placeholder="Enter email"
+              placeholder="you@example.com"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
@@ -49,7 +87,8 @@ function Login({ switchToRegister }) {
             <label>Password</label>
             <input
               type="password"
-              placeholder="Enter password"
+              placeholder="Enter your password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
@@ -59,6 +98,8 @@ function Login({ switchToRegister }) {
             Login
           </button>
         </form>
+
+        {message && <p className="message">{message}</p>}
 
         <p className="switch-text">
           Don’t have an account?{" "}
