@@ -1,0 +1,269 @@
+.service-details-page {
+  background-color: #FAFAFA;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+.details-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 3rem;
+  position: relative;
+}
+
+/* Left Column */
+.service-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 0.5rem;
+}
+
+.rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.star-icon {
+  color: #FFC107;
+}
+
+.service-image-container {
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.detail-img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.features-list {
+  margin-bottom: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.features-list h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.features-list ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.features-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #555;
+}
+
+.check-icon {
+  color: #00BFA5;
+}
+
+/* Provider Card */
+.provider-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  margin-bottom: 2rem;
+}
+
+.provider-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.provider-avatar {
+  width: 60px;
+  height: 60px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.jobs-done {
+  font-size: 0.85rem;
+  color: #757575;
+  margin-top: 2px;
+}
+
+.verified-tag {
+  margin-left: auto;
+  background: #E6FFF2;
+  color: #00BFA5;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.description h3 {
+  margin-bottom: 1rem;
+}
+
+.description p {
+  line-height: 1.8;
+  color: #666;
+}
+
+/* Right Column - Sticky Booking Card */
+.booking-card-wrapper {
+  position: sticky;
+  top: 100px;
+  /* Adjust based on navbar height */
+  height: fit-content;
+}
+
+.booking-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.booking-header h3 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.price-tag {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #212121;
+}
+
+/* Calendar Styling Overrides */
+.custom-calendar {
+  width: 100% !important;
+  border: none !important;
+  font-family: 'Inter', sans-serif !important;
+  margin-bottom: 1.5rem;
+}
+
+.react-calendar__tile--active {
+  background: #212121 !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+.react-calendar__tile--now {
+  background: #ffffd1 !important;
+  color: black !important;
+  border-radius: 8px;
+}
+
+.time-slots p {
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+}
+
+.slot-btn {
+  padding: 0.6rem 0.2rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.slot-btn:hover {
+  border-color: #212121;
+}
+
+.slot-btn.active {
+  background: #212121;
+  color: white;
+  border-color: #212121;
+}
+
+.booking-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.book-btn {
+  width: 100%;
+  background: #212121;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.book-btn:hover {
+  background: #000;
+}
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-card-wrapper {
+    position: static;
+  }
+}
