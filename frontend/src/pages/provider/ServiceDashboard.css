@@ -1,0 +1,34 @@
+.provider-dashboard {
+  padding: 20px;
+}
+
+.service-card-container {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.service-card {
+  width: 260px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* THIS IS IMPORTANT */
+.service-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-content {
+  padding: 12px;
+}
+
+.price {
+  color: #2563eb;
+  font-weight: bold;
+}
