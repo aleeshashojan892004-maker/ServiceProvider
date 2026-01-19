@@ -1,0 +1,51 @@
+.provider-bookings {
+  padding: 20px;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bookings-table th,
+.bookings-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.bookings-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+/* status badges */
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status.completed {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status.cancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}

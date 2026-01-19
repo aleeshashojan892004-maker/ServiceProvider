@@ -1,0 +1,45 @@
+.my-services {
+  padding: 20px;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.services-table th,
+.services-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.services-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status.active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status.inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+}

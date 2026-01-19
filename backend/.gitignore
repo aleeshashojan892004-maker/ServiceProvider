@@ -27,3 +27,7 @@ __pycache__/
 users.db
 .env
 
+# Python virtual environment
+venv/
+backend/venv/
+

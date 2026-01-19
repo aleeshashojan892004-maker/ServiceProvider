@@ -8,6 +8,7 @@ from app.utils import hash_password, verify_password
 
 router = APIRouter()
 
+
 @router.post("/register")
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     print("REGISTER API HIT")
@@ -16,13 +17,15 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    # ✅ HASH PASSWORD (THIS WAS MISSING)
+    hashed_password = hash_password(data.password)
+
     user = User(
         name=data.name,
         email=data.email,
-        password=hash_password(data.password),
+        password=hashed_password,
         role=data.role,
         phone=data.phone,
-        service_name=data.service_name,
         place=data.place,
     )
 
