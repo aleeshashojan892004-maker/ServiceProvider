@@ -1,18 +1,4 @@
-# from pydantic import BaseModel, EmailStr
-
-# class RegisterRequest(BaseModel):
-#     name: str
-#     email: EmailStr
-#     password: str
-#     role: str
-#     phone: str | None = None
-#     service_name: str | None = None
-#     place: str | None = None
-
-
-# class LoginRequest(BaseModel):
-#     email: EmailStr
-#     password: str
+from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
@@ -31,3 +17,20 @@ class LoginRequest(BaseModel):
     email: str
     password: str
     role: str
+
+class BookingCreate(BaseModel):
+    provider_id: int
+    service_name: str
+    booking_date: datetime
+
+
+class BookingResponse(BaseModel):
+    id: int
+    user_id: int
+    provider_id: int
+    service_name: str
+    booking_date: datetime
+    status: str
+
+    class Config:
+        orm_mode = True
