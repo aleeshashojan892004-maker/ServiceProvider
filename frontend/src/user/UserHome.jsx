@@ -4,16 +4,25 @@ import UserNavbar from './component/UserNavbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaFemale, FaMale, FaFan, FaBroom, FaBolt, FaWrench,
-  FaPaintRoller, FaHammer, FaStar, FaArrowRight
+  FaPaintRoller, FaHammer, FaStar, FaArrowRight, FaFilter, FaTimes
 } from 'react-icons/fa';
-import { popularServices } from '../data/services';
+import { servicesAPI } from '../utils/api';
 import './UserHome.css';
 
 const UserHome = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [filteredServices, setFilteredServices] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    category: '',
+    minPrice: '',
+    maxPrice: '',
+    minRating: '',
+    sortBy: ''
+  });
 
   const categories = [
     { id: 1, name: "Women's Salon", icon: <FaFemale />, keyword: "Salon", color: "#FFEFF6" },
@@ -27,32 +36,63 @@ const UserHome = () => {
   ];
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const query = searchParams.get('search');
+    const fetchServices = async () => {
+      setLoading(true);
+      try {
+        const searchParams = new URLSearchParams(location.search);
+        const searchQuery = searchParams.get('search');
+        
+        const filtersToApply = {
+          ...filters,
+          search: searchQuery || ''
+        };
 
-    console.log("DEBUG: Search Query from URL:", query);
+        const response = await servicesAPI.getServices(filtersToApply);
+        setServices(response.services || []);
+        
+        if (searchQuery) {
+          setActiveCategory(searchQuery);
+        } else {
+          setActiveCategory('All');
+        }
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (query) {
-      setActiveCategory(query);
-      const lowerQuery = query.toLowerCase().trim();
-
-      const filtered = popularServices.filter(service => {
-        const titleMatch = service.title.toLowerCase().includes(lowerQuery);
-        const categoryMatch = service.category.toLowerCase().includes(lowerQuery);
-        console.log(`Checking service: ${service.title} (${service.category}) vs query: ${lowerQuery} -> Match: ${titleMatch || categoryMatch}`);
-        return titleMatch || categoryMatch;
-      });
-
-      console.log("DEBUG: Filtered Results:", filtered);
-      setFilteredServices(filtered);
-    } else {
-      setActiveCategory('All');
-      setFilteredServices(popularServices);
-    }
-  }, [location.search]);
+    fetchServices();
+  }, [location.search, filters]);
 
   const handleCategoryClick = (keyword) => {
     navigate(`/user/home?search=${encodeURIComponent(keyword)}`);
+  };
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      category: '',
+      minPrice: '',
+      maxPrice: '',
+      minRating: '',
+      sortBy: ''
+    });
+    navigate('/user/home');
+  };
+
+  const formatPrice = (price) => {
+    return `₹${price}`;
+  };
+
+  const formatReviews = (reviews) => {
+    if (reviews >= 1000000) return `${(reviews / 1000000).toFixed(1)}M+`;
+    if (reviews >= 1000) return `${(reviews / 1000).toFixed(0)}k+`;
+    return `${reviews}+`;
   };
 
   return (
@@ -118,21 +158,108 @@ const UserHome = () => {
         <div id="services-section" className="section">
           <div className="section-header">
             <h2>{location.search ? `Results for "${new URLSearchParams(location.search).get('search')}"` : 'Most Booked Services'}</h2>
-            {location.search && (
-              <button className="clear-filter-btn" onClick={() => navigate('/user/home')}>
-                Show All
+            <div className="section-header-actions">
+              <button className="filter-toggle-btn" onClick={() => setShowFilters(!showFilters)}>
+                <FaFilter /> Filters
               </button>
-            )}
+              {(location.search || Object.values(filters).some(f => f)) && (
+                <button className="clear-filter-btn" onClick={clearFilters}>
+                  Clear All
+                </button>
+              )}
+            </div>
           </div>
 
+          {/* Filters Panel */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                className="filters-panel"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+              >
+                <div className="filters-content">
+                  <div className="filter-group">
+                    <label>Category</label>
+                    <select 
+                      value={filters.category} 
+                      onChange={(e) => handleFilterChange('category', e.target.value)}
+                    >
+                      <option value="">All Categories</option>
+                      <option value="AC">AC & Appliance</option>
+                      <option value="Cleaning">Cleaning</option>
+                      <option value="Electrician">Electrician</option>
+                      <option value="Plumber">Plumber</option>
+                      <option value="Men">Men's Salon</option>
+                      <option value="Salon">Women's Salon</option>
+                      <option value="Painting">Painting</option>
+                      <option value="Carpentry">Carpentry</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Price Range</label>
+                    <div className="price-inputs">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={filters.minPrice}
+                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                      />
+                      <span>to</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={filters.maxPrice}
+                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Minimum Rating</label>
+                    <select 
+                      value={filters.minRating} 
+                      onChange={(e) => handleFilterChange('minRating', e.target.value)}
+                    >
+                      <option value="">Any Rating</option>
+                      <option value="4.5">4.5+ Stars</option>
+                      <option value="4.0">4.0+ Stars</option>
+                      <option value="3.5">3.5+ Stars</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Sort By</label>
+                    <select 
+                      value={filters.sortBy} 
+                      onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                    >
+                      <option value="">Default</option>
+                      <option value="price-low">Price: Low to High</option>
+                      <option value="price-high">Price: High to Low</option>
+                      <option value="rating">Highest Rated</option>
+                    </select>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <AnimatePresence mode="wait">
-            {filteredServices.length > 0 ? (
+            {loading ? (
+              <div className="loading-state">
+                <div className="spinner"></div>
+                <p>Loading services...</p>
+              </div>
+            ) : services.length > 0 ? (
               <motion.div className="services-grid" layout>
-                {filteredServices.map((service, index) => (
+                {services.map((service, index) => (
                   <motion.div
-                    key={service.id}
+                    key={service._id || service.id}
                     className="service-card"
-                    onClick={() => navigate(`/service/${service.id}`)}
+                    onClick={() => navigate(`/service/${service._id || service.id}`)}
                     layout
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -148,10 +275,10 @@ const UserHome = () => {
                       <div className="rating-box">
                         <FaStar className="star-icon" />
                         <span className="rating-val">{service.rating}</span>
-                        <span className="review-count">({service.reviews})</span>
+                        <span className="review-count">({formatReviews(service.reviews)})</span>
                       </div>
                       <div className="price-row">
-                        <span className="price">Starts at {service.price}</span>
+                        <span className="price">Starts at {formatPrice(service.price)}</span>
                         <button className="add-btn">View</button>
                       </div>
                     </div>
@@ -162,7 +289,7 @@ const UserHome = () => {
               <motion.div className="no-results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <img src="https://cdni.iconscout.com/illustration/premium/thumb/search-result-not-found-2130361-1800925.png" alt="No Filter" className="no-result-img" />
                 <p>No services found matching your search.</p>
-                <button onClick={() => navigate('/user/home')} className="reset-btn">View All Services</button>
+                <button onClick={clearFilters} className="reset-btn">View All Services</button>
               </motion.div>
             )}
           </AnimatePresence>

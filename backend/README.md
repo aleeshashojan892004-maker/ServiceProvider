@@ -1,18 +1,71 @@
-# React + Vite
+# Service Provider Backend API
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Node.js/Express backend for the Service Provider platform (Urban Company clone).
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- User authentication (JWT-based)
+- User registration and login
+- User profile management
+- Location management
+- Service listing with search and filters
+- Booking management
+- RESTful API endpoints
 
-## React Compiler
+## Setup
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+1. Install dependencies:
+```bash
+npm install
+```
 
-Note: This will impact Vite dev & build performances.
+2. Create a `.env` file in the backend directory:
+```
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/serviceprovider
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+```
 
-## Expanding the ESLint configuration
+3. Make sure MongoDB is running on your system (or use MongoDB Atlas)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+4. Seed initial services data:
+```bash
+node scripts/seedServices.js
+```
+
+5. Start the server:
+```bash
+npm run dev
+```
+
+The server will run on `http://localhost:5000`
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user
+
+### User
+- `GET /api/user/profile` - Get user profile
+- `PUT /api/user/profile` - Update user profile
+- `PUT /api/user/location` - Update user location
+
+### Services
+- `GET /api/services` - Get all services (with filters)
+- `GET /api/services/:id` - Get service by ID
+- `GET /api/services/categories/list` - Get all categories
+
+### Bookings
+- `POST /api/bookings` - Create a booking
+- `GET /api/bookings/my-bookings` - Get user bookings
+- `PUT /api/bookings/:id/status` - Update booking status
+
+## Technologies
+
+- Node.js
+- Express.js
+- MongoDB with Mongoose
+- JWT for authentication
+- bcryptjs for password hashing
