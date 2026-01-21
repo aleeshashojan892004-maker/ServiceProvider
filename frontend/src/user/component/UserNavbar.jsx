@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaMapMarkerAlt, FaUserCircle, FaChevronDown, FaTimes, FaShoppingCart, FaPen } from 'react-icons/fa';
+import { FaSearch, FaMapMarkerAlt, FaUserCircle, FaChevronDown, FaTimes, FaShoppingCart, FaPen, FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useUser } from '../../context/UserContext';
@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './UserNavbar.css';
 
 const UserNavbar = () => {
-  const { user, updateProfile } = useUser();
+  const { user, updateProfile, updateLocation, logout } = useUser();
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,9 +26,18 @@ const UserNavbar = () => {
     "Bangalore", "Mumbai", "Delhi", "Hyderabad", "Chennai", "Pune"
   ];
 
-  const handleLocationSelect = (city) => {
-    updateProfile({ location: city });
-    setShowLocationModal(false);
+  const handleLocationSelect = async (city) => {
+    try {
+      await updateLocation({ 
+        address: city,
+        city: city,
+        state: '',
+        pincode: ''
+      });
+      setShowLocationModal(false);
+    } catch (error) {
+      console.error('Failed to update location:', error);
+    }
   };
 
   const handleSearch = (e) => {
@@ -55,7 +64,11 @@ const UserNavbar = () => {
           <div className="navbar-center">
             <div className="location-wrapper" onClick={() => setShowLocationModal(true)}>
               <FaMapMarkerAlt className="icon" />
-              <span className="location-text">{user.location || "Select Location"}</span>
+              <span className="location-text">
+                {typeof user.location === 'string' 
+                  ? user.location 
+                  : (user.location?.address || user.location?.city || "Select Location")}
+              </span>
               <FaChevronDown className="dropdown-icon" />
             </div>
             <div className="search-wrapper">
@@ -73,17 +86,31 @@ const UserNavbar = () => {
           </div>
 
           <div className="navbar-right">
+            <div className="nav-link" onClick={() => navigate('/user/orders')}>
+              <span>Orders</span>
+            </div>
             <div className="nav-link cart-link" onClick={() => navigate('/user/cart')}>
               <FaShoppingCart className="cart-icon-nav" />
               <span>Cart</span>
               {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
             </div>
-            <div className="nav-link" onClick={() => setShowProfileModal(true)}>
+            <div className="nav-link" onClick={() => navigate('/user/profile')}>
               <div className="user-profile">
                 <FaUserCircle className="user-icon" />
-                <span>{user.name}</span>
+                <span>{user.name || 'Profile'}</span>
               </div>
             </div>
+            <button 
+              className="nav-link logout-btn-nav" 
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              title="Logout"
+            >
+              <FaSignOutAlt className="logout-icon" />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       </nav>
@@ -110,15 +137,20 @@ const UserNavbar = () => {
                 <FaTimes className="close-icon" onClick={() => setShowLocationModal(false)} />
               </div>
               <div className="city-grid">
-                {cities.map(city => (
-                  <button
-                    key={city}
-                    className={`city-btn ${user.location === city ? 'active' : ''}`}
-                    onClick={() => handleLocationSelect(city)}
-                  >
-                    {city}
-                  </button>
-                ))}
+                {cities.map(city => {
+                  const currentLocation = typeof user.location === 'string' 
+                    ? user.location 
+                    : (user.location?.city || user.location?.address || '');
+                  return (
+                    <button
+                      key={city}
+                      className={`city-btn ${currentLocation === city ? 'active' : ''}`}
+                      onClick={() => handleLocationSelect(city)}
+                    >
+                      {city}
+                    </button>
+                  );
+                })}
               </div>
               <div className="detect-location">
                 <FaMapMarkerAlt /> <span>Detect my current location</span>

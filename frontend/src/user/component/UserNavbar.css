@@ -173,6 +173,32 @@
   color: var(--text-secondary);
 }
 
+.logout-btn-nav {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+}
+
+.logout-btn-nav:hover {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.logout-icon {
+  font-size: 1rem;
+}
+
 /* Modal Overlay */
 .modal-overlay {
   position: fixed;

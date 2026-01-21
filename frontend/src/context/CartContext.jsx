@@ -29,7 +29,10 @@ export const CartProvider = ({ children }) => {
   };
 
   const getCartTotal = () => {
-    return cart.reduce((total, item) => total + parseInt(item.price), 0);
+    return cart.reduce((total, item) => {
+      const price = item.service?.price || item.price || 0;
+      return total + parseInt(price);
+    }, 0);
   };
 
   return (

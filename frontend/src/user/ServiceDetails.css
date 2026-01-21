@@ -4,6 +4,42 @@
   padding-bottom: 80px;
 }
 
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #6e42e5;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-state button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #6e42e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 .details-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -226,9 +262,56 @@
   border-color: #212121;
 }
 
+.slot-btn.unavailable {
+  background: #f5f5f5;
+  color: #999;
+  border-color: #ddd;
+  cursor: not-allowed;
+  opacity: 0.6;
+  position: relative;
+}
+
+.slot-btn.unavailable:hover {
+  border-color: #ddd;
+}
+
+.unavailable-badge {
+  display: block;
+  font-size: 0.7rem;
+  color: #f44336;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.checking-availability {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.availability-warning {
+  background: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  border-left: 4px solid #ffc107;
+}
+
 .booking-footer {
   margin-top: 2rem;
   text-align: center;
+}
+
+.book-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .book-btn {

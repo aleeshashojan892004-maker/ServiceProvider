@@ -1,23 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserNavbar from './component/UserNavbar';
 import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
+import { bookingsAPI } from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTrash, FaArrowLeft, FaCheckCircle, FaCalendarAlt, FaClock, FaShieldAlt } from 'react-icons/fa';
 import './Cart.css';
 
 const Cart = () => {
   const { cart, removeFromCart, getCartTotal, clearCart } = useCart();
+  const { user } = useUser();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const total = getCartTotal();
   const tax = Math.round(total * 0.18);
   const finalTotal = total + tax;
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) return;
-    alert("Order placed successfully! Thank you for booking.");
-    clearCart();
-    navigate('/user/home');
+    
+    if (!user.isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Create bookings for each cart item
+      const bookingPromises = cart.map(item => {
+        const service = item.service || item;
+        return bookingsAPI.createBooking({
+          serviceId: service._id || service.id || item.serviceId,
+          bookingDate: item.date || new Date().toISOString(),
+          bookingTime: item.time || '10:00 AM',
+          address: user.location?.address || user.location || 'Address not set',
+          totalAmount: parseInt(service.price) || parseInt(item.price)
+        });
+      });
+
+      await Promise.all(bookingPromises);
+      
+      alert("Order placed successfully! Thank you for booking.");
+      clearCart();
+      navigate('/user/orders');
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert('Failed to place order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,14 +86,14 @@ const Cart = () => {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="cart-item-left">
-                      <img src={item.service.image} alt={item.service.title} className="cart-item-img" />
+                      <img src={(item.service || item).image} alt={(item.service || item).title} className="cart-item-img" />
                       <div className="cart-item-details">
-                        <h3>{item.service.title}</h3>
+                        <h3>{(item.service || item).title}</h3>
                         <div className="item-meta">
                           <span className="meta-tag"><FaCalendarAlt /> {item.date}</span>
                           <span className="meta-tag"><FaClock /> {item.time}</span>
                         </div>
-                        <div className="item-price">₹{item.service.price}</div>
+                        <div className="item-price">₹{(item.service || item).price}</div>
                       </div>
                     </div>
                     <button className="remove-btn" onClick={() => removeFromCart(item.cartId)}>
@@ -97,8 +129,8 @@ const Cart = () => {
                 <FaCheckCircle /> You are saving ₹50 on this order!
               </div>
 
-              <button className="checkout-btn" onClick={handleCheckout}>
-                Proceed to Pay <FaArrowLeft style={{ transform: 'rotate(180deg)', marginLeft: '8px' }} />
+              <button className="checkout-btn" onClick={handleCheckout} disabled={loading}>
+                {loading ? 'Processing...' : 'Proceed to Pay'} <FaArrowLeft style={{ transform: 'rotate(180deg)', marginLeft: '8px' }} />
               </button>
 
               <p className="checkout-note">
