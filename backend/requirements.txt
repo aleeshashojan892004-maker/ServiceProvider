@@ -2,5 +2,4 @@ fastapi
 uvicorn
 sqlalchemy
 pydantic
-hashlib
 python-multipart

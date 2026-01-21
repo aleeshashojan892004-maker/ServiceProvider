@@ -1,16 +1,19 @@
 import { Outlet } from "react-router-dom";
 import ProviderSidebar from "../../components/ProviderSidebar";
-import "./providerLayout.css";
+import "./providerLayout.css"; // optional, if you have styles
 
-const ProviderLayout = () => {
+function ProviderLayout() {
   return (
-    <div className="provider-layout">
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      {/* MENU BAR */}
       <ProviderSidebar />
-      <div className="provider-content">
+
+      {/* PAGE CONTENT */}
+      <div style={{ flex: 1, padding: "20px" }}>
         <Outlet />
       </div>
     </div>
   );
-};
+}
 
 export default ProviderLayout;

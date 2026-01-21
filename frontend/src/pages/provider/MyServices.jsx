@@ -1,31 +1,28 @@
+import { useEffect, useState } from "react";
 import "./MyServices.css";
 
-const myServices = [
-  {
-    id: 1,
-    name: "AC Repair",
-    price: 499,
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Bathroom Cleaning",
-    price: 799,
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "Electrician",
-    price: 299,
-    status: "Inactive",
-  },
-];
-
 const MyServices = () => {
+  const [myServices, setMyServices] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/services")
+      .then((res) => res.json())
+      .then((data) => {
+        // TEMP: filter by provider_id
+        const filtered = data.filter(
+          (service) => service.provider_id === 2
+        );
+        setMyServices(filtered);
+      })
+      .catch((err) => console.error("Error fetching services:", err));
+  }, []);
+
   return (
     <div className="my-services">
       <h1>My Services</h1>
       <p className="subtitle">List of services you provide</p>
+
+      {myServices.length === 0 && <p>No services added yet.</p>}
 
       <table className="services-table">
         <thead>
@@ -39,18 +36,10 @@ const MyServices = () => {
         <tbody>
           {myServices.map((service) => (
             <tr key={service.id}>
-              <td>{service.name}</td>
+              <td>{service.title}</td>
               <td>{service.price}</td>
               <td>
-                <span
-                  className={
-                    service.status === "Active"
-                      ? "status active"
-                      : "status inactive"
-                  }
-                >
-                  {service.status}
-                </span>
+                <span className="status active">Active</span>
               </td>
             </tr>
           ))}
