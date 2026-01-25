@@ -117,4 +117,21 @@ See `backend/README.md` for detailed API documentation.
 - The frontend expects the backend to run on `http://localhost:5000`
 - See `QUICK_START.md` for detailed setup instructions
 
-## Quick StartFor detailed commands and setup, see **[QUICK_START.md](./QUICK_START.md)**
+## Quick Start
+
+For detailed commands and setup, see **[QUICK_START.md](./QUICK_START.md)**
+
+## Team Setup
+
+**For teammates to quickly get started:**
+- See **[TEAM_SETUP.md](./TEAM_SETUP.md)** for complete setup instructions
+- Run `npm run setup-team` in backend folder to prepare database with test data
+- Test login credentials are provided in TEAM_SETUP.md
+
+## Documentation
+
+All detailed documentation is available in the [`docs/`](./docs/) folder:
+- **Database Setup**: [docs/DATABASE_SETUP.md](./docs/DATABASE_SETUP.md)
+- **Project Presentation**: [docs/PROJECT_PRESENTATION.md](./docs/PROJECT_PRESENTATION.md)
+- **Testing Guide**: [docs/TESTING_GUIDE.md](./docs/TESTING_GUIDE.md)
+- **Technical Details**: [docs/TECHNICAL_DEEP_DIVE.md](./docs/TECHNICAL_DEEP_DIVE.md)

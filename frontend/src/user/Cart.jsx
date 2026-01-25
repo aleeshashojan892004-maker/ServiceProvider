@@ -30,12 +30,16 @@ const Cart = () => {
       // Create bookings for each cart item
       const bookingPromises = cart.map(item => {
         const service = item.service || item;
+        const locationStr = typeof user.location === 'string' 
+          ? user.location 
+          : (user.location?.address || user.location?.city || 'Address not set');
+        
         return bookingsAPI.createBooking({
-          serviceId: service._id || service.id || item.serviceId,
-          bookingDate: item.date || new Date().toISOString(),
+          serviceId: service.id || item.serviceId,
+          bookingDate: item.date || new Date().toISOString().split('T')[0],
           bookingTime: item.time || '10:00 AM',
-          address: user.location?.address || user.location || 'Address not set',
-          totalAmount: parseInt(service.price) || parseInt(item.price)
+          address: locationStr,
+          totalAmount: parseFloat(service.price) || parseFloat(item.price)
         });
       });
 
@@ -77,7 +81,7 @@ const Cart = () => {
               <AnimatePresence>
                 {cart.map((item) => (
                   <motion.div
-                    key={item.cartId}
+                    key={item.id}
                     className="cart-item"
                     layout
                     initial={{ opacity: 0, x: -20 }}
@@ -96,7 +100,7 @@ const Cart = () => {
                         <div className="item-price">₹{(item.service || item).price}</div>
                       </div>
                     </div>
-                    <button className="remove-btn" onClick={() => removeFromCart(item.cartId)}>
+                    <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
                       <FaTrash /> Remove
                     </button>
                   </motion.div>

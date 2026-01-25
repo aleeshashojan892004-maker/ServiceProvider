@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 // Helper function to get auth token
 const getToken = () => {
@@ -18,10 +18,17 @@ const apiCall = async (endpoint, options = {}) => {
   }
 
   try {
+    // Add timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     // Check if response is JSON
     let data;
@@ -40,12 +47,17 @@ const apiCall = async (endpoint, options = {}) => {
     return data;
   } catch (error) {
     console.error('API Error:', error);
-    
+
+    // Handle abort/timeout errors
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout. Please check if the backend server is running.');
+    }
+
     // Handle network errors
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
       throw new Error('Cannot connect to server. Please make sure the backend is running on http://localhost:5000');
     }
-    
+
     // Re-throw with better message
     throw error;
   }
@@ -69,7 +81,7 @@ export const authAPI = {
 // User API
 export const userAPI = {
   getProfile: () => apiCall('/user/profile'),
-  
+
   updateProfile: (profileData) => apiCall('/user/profile', {
     method: 'PUT',
     body: JSON.stringify(profileData),
@@ -156,4 +168,98 @@ export const providerAPI = {
 
   // Stats
   getStats: () => apiCall('/provider/stats'),
+};
+
+// Cart API
+export const cartAPI = {
+  getCart: () => apiCall('/cart'),
+
+  addToCart: (serviceId, quantity = 1) => apiCall('/cart/add', {
+    method: 'POST',
+    body: JSON.stringify({ serviceId, quantity }),
+  }),
+
+  removeFromCart: (cartItemId) => apiCall(`/cart/remove/${cartItemId}`, {
+    method: 'DELETE',
+  }),
+
+  updateCartItem: (cartItemId, quantity) => apiCall(`/cart/update/${cartItemId}`, {
+    method: 'PUT',
+    body: JSON.stringify({ quantity }),
+  }),
+
+  clearCart: () => apiCall('/cart/clear', {
+    method: 'DELETE',
+  }),
+};
+
+// Admin API
+export const adminAPI = {
+  getStats: () => apiCall('/admin/stats'),
+
+  getUsers: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key]) queryParams.append(key, params[key]);
+    });
+    const query = queryParams.toString();
+    return apiCall(`/admin/users${query ? `?${query}` : ''}`);
+  },
+
+  getUserById: (id) => apiCall(`/admin/users/${id}`),
+
+  updateUser: (id, userData) => apiCall(`/admin/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData),
+  }),
+
+  deleteUser: (id) => apiCall(`/admin/users/${id}`, {
+    method: 'DELETE',
+  }),
+
+  getProviders: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key]) queryParams.append(key, params[key]);
+    });
+    const query = queryParams.toString();
+    return apiCall(`/admin/providers${query ? `?${query}` : ''}`);
+  },
+
+  verifyProvider: (id, verified) => apiCall(`/admin/providers/${id}/verify`, {
+    method: 'PUT',
+    body: JSON.stringify({ verified }),
+  }),
+
+  getServices: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key]) queryParams.append(key, params[key]);
+    });
+    const query = queryParams.toString();
+    return apiCall(`/admin/services${query ? `?${query}` : ''}`);
+  },
+
+  updateService: (id, serviceData) => apiCall(`/admin/services/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(serviceData),
+  }),
+
+  deleteService: (id) => apiCall(`/admin/services/${id}`, {
+    method: 'DELETE',
+  }),
+
+  getBookings: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key]) queryParams.append(key, params[key]);
+    });
+    const query = queryParams.toString();
+    return apiCall(`/admin/bookings${query ? `?${query}` : ''}`);
+  },
+
+  updateBookingStatus: (id, status) => apiCall(`/admin/bookings/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  }),
 };

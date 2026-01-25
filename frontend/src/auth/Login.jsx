@@ -5,7 +5,7 @@ import { useUser } from '../context/UserContext';
 import './Login.css';
 
 const Login = () => {
-  const [isProvider, setIsProvider] = useState(false);
+  const [userType, setUserType] = useState('user'); // 'user', 'provider', 'admin'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,23 +19,33 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const userType = isProvider ? 'provider' : 'user';
-      const response = await authAPI.login(email, password, userType);
+      // For admin login, don't pass userType to allow flexibility
+      const loginUserType = userType === 'user' ? undefined : userType;
+      const response = await authAPI.login(email, password, loginUserType);
+      
+      console.log('Login successful, userType:', response.user.userType); // Debug
       
       // Store token
       localStorage.setItem('token', response.token);
       
-      // Update user context
-      updateProfile({
+      // Update user context immediately with all user data including userType
+      const userData = {
         ...response.user,
-        isLoggedIn: true
-      });
+        isLoggedIn: true,
+        userType: response.user.userType // Explicitly preserve userType
+      };
+      
+      console.log('Updating user context with:', userData); // Debug
+      updateProfile(userData);
 
-      // Navigate based on user type
-      if (isProvider) {
-        navigate('/provider/home');
+      // Navigate based on user type immediately
+      if (response.user.userType === 'admin') {
+        console.log('Redirecting admin to dashboard');
+        navigate('/admin/dashboard', { replace: true });
+      } else if (response.user.userType === 'provider') {
+        navigate('/provider/home', { replace: true });
       } else {
-        navigate('/user/home');
+        navigate('/user/home', { replace: true });
       }
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
@@ -54,16 +64,22 @@ const Login = () => {
 
         <div className="toggle-container">
           <button 
-            className={`toggle-btn ${!isProvider ? 'active' : ''}`}
-            onClick={() => setIsProvider(false)}
+            className={`toggle-btn ${userType === 'user' ? 'active' : ''}`}
+            onClick={() => setUserType('user')}
           >
             User
           </button>
           <button 
-            className={`toggle-btn ${isProvider ? 'active' : ''}`}
-            onClick={() => setIsProvider(true)}
+            className={`toggle-btn ${userType === 'provider' ? 'active' : ''}`}
+            onClick={() => setUserType('provider')}
           >
-            Service Provider
+            Provider
+          </button>
+          <button 
+            className={`toggle-btn ${userType === 'admin' ? 'active' : ''}`}
+            onClick={() => setUserType('admin')}
+          >
+            Admin
           </button>
         </div>
 
@@ -93,7 +109,7 @@ const Login = () => {
           </div>
 
           <button type="submit" className="login-submit-btn" disabled={loading}>
-            {loading ? 'Logging in...' : `Login as ${isProvider ? 'Provider' : 'User'}`}
+            {loading ? 'Logging in...' : `Login as ${userType.charAt(0).toUpperCase() + userType.slice(1)}`}
           </button>
         </form>
 

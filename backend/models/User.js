@@ -37,10 +37,30 @@ const User = sequelize.define('User', {
     // Store as JSON string
     get() {
       const value = this.getDataValue('location');
-      return value ? JSON.parse(value) : null;
+      if (!value) return null;
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+        // If parsing fails, return as string
+        return value;
+      }
     },
     set(value) {
-      this.setDataValue('location', value ? JSON.stringify(value) : null);
+      if (value === null || value === undefined) {
+        this.setDataValue('location', null);
+      } else if (typeof value === 'string') {
+        // If it's already a string, try to parse it first to validate
+        try {
+          JSON.parse(value);
+          this.setDataValue('location', value);
+        } catch (e) {
+          // If it's not valid JSON, store as plain string
+          this.setDataValue('location', value);
+        }
+      } else {
+        // If it's an object, stringify it
+        this.setDataValue('location', JSON.stringify(value));
+      }
     }
   },
   profilePic: {
@@ -49,7 +69,7 @@ const User = sequelize.define('User', {
     defaultValue: null
   },
   userType: {
-    type: DataTypes.ENUM('user', 'provider'),
+    type: DataTypes.ENUM('user', 'provider', 'admin'),
     defaultValue: 'user'
   },
   // Provider-specific fields
@@ -68,10 +88,32 @@ const User = sequelize.define('User', {
     // Store as JSON string (array of areas/cities)
     get() {
       const value = this.getDataValue('serviceAreas');
-      return value ? JSON.parse(value) : [];
+      if (!value) return [];
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        // If parsing fails, return empty array
+        return [];
+      }
     },
     set(value) {
-      this.setDataValue('serviceAreas', value ? JSON.stringify(value) : null);
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        this.setDataValue('serviceAreas', null);
+      } else if (Array.isArray(value)) {
+        this.setDataValue('serviceAreas', JSON.stringify(value));
+      } else if (typeof value === 'string') {
+        try {
+          // Try to parse and validate
+          const parsed = JSON.parse(value);
+          this.setDataValue('serviceAreas', Array.isArray(parsed) ? JSON.stringify(parsed) : null);
+        } catch (e) {
+          // If not valid JSON, store as array with single value
+          this.setDataValue('serviceAreas', JSON.stringify([value]));
+        }
+      } else {
+        this.setDataValue('serviceAreas', JSON.stringify([value]));
+      }
     }
   },
   experience: {

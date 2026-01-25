@@ -11,7 +11,7 @@ const dbPath = path.join(__dirname, '..', 'database.sqlite');
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: dbPath,
-  logging: false, // Set to console.log to see SQL queries
+  logging: false
 });
 
 const connectDB = async () => {

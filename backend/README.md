@@ -1,6 +1,6 @@
 # Service Provider Backend API
 
-A Node.js/Express backend for the Service Provider platform (Urban Company clone).
+A Node.js/Express backend for the Service Provider platform.
 
 ## Features
 
@@ -10,6 +10,8 @@ A Node.js/Express backend for the Service Provider platform (Urban Company clone
 - Location management
 - Service listing with search and filters
 - Booking management
+- Cart management
+- Provider dashboard
 - RESTful API endpoints
 
 ## Setup
@@ -19,18 +21,19 @@ A Node.js/Express backend for the Service Provider platform (Urban Company clone
 npm install
 ```
 
-2. Create a `.env` file in the backend directory:
-```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/serviceprovider
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-```
-
-3. Make sure MongoDB is running on your system (or use MongoDB Atlas)
-
-4. Seed initial services data:
+2. Initialize database:
 ```bash
-node scripts/seedServices.js
+npm run init-db
+```
+
+3. Seed sample services:
+```bash
+npm run seed-services
+```
+
+4. Create test users:
+```bash
+npm run create-test-users
 ```
 
 5. Start the server:
@@ -39,6 +42,22 @@ npm run dev
 ```
 
 The server will run on `http://localhost:5000`
+
+## Database
+
+- **Type:** SQLite (file-based)
+- **Location:** `database.sqlite`
+- **No server setup required**
+
+## Available Scripts
+
+- `npm start` - Run in production mode
+- `npm run dev` - Run with auto-reload
+- `npm run init-db` - Initialize database
+- `npm run reset-db` - Reset database (⚠️ deletes all data)
+- `npm run seed-services` - Add sample services
+- `npm run create-test-users` - Create test accounts
+- `npm run setup-team` - Complete setup (reset + seed + users)
 
 ## API Endpoints
 
@@ -56,16 +75,34 @@ The server will run on `http://localhost:5000`
 - `GET /api/services` - Get all services (with filters)
 - `GET /api/services/:id` - Get service by ID
 - `GET /api/services/categories/list` - Get all categories
+- `GET /api/services/:id/availability` - Check availability
 
 ### Bookings
 - `POST /api/bookings` - Create a booking
 - `GET /api/bookings/my-bookings` - Get user bookings
+- `GET /api/bookings/:id` - Get booking details
 - `PUT /api/bookings/:id/status` - Update booking status
+
+### Cart
+- `GET /api/cart` - Get user's cart
+- `POST /api/cart/add` - Add item to cart
+- `DELETE /api/cart/remove/:id` - Remove item
+- `PUT /api/cart/update/:id` - Update quantity
+- `DELETE /api/cart/clear` - Clear cart
+
+### Provider
+- `GET /api/provider/services` - Get provider's services
+- `POST /api/provider/services` - Create service
+- `PUT /api/provider/services/:id` - Update service
+- `DELETE /api/provider/services/:id` - Delete service
+- `GET /api/provider/bookings` - Get provider's bookings
+- `PUT /api/provider/bookings/:id/status` - Update booking status
+- `GET /api/provider/stats` - Get provider statistics
 
 ## Technologies
 
 - Node.js
 - Express.js
-- MongoDB with Mongoose
+- SQLite with Sequelize ORM
 - JWT for authentication
 - bcryptjs for password hashing
