@@ -26,16 +26,7 @@ export const UserProvider = ({ children }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    // Add timeout to prevent hanging if backend is down
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Request timeout')), 5000)
-                    );
-                    
-                    const response = await Promise.race([
-                        authAPI.getCurrentUser(),
-                        timeoutPromise
-                    ]);
-                    
+                    const response = await authAPI.getCurrentUser();
                     // Normalize location - handle both object and string formats
                     const location = response.user.location;
                     const normalizedLocation = typeof location === 'string' 
@@ -45,16 +36,12 @@ export const UserProvider = ({ children }) => {
                     setUser({
                         ...response.user,
                         location: normalizedLocation,
-                        isLoggedIn: true,
-                        userType: response.user.userType // Explicitly preserve userType
+                        isLoggedIn: true
                     });
                 } catch (error) {
                     // Don't block the app if API call fails
                     console.error('Failed to load user:', error);
-                    // Only remove token if it's an auth error, not a network error
-                    if (error.message && (error.message.includes('401') || error.message.includes('Invalid token'))) {
-                        localStorage.removeItem('token');
-                    }
+                    localStorage.removeItem('token');
                 }
             }
             // Always set loading to false, even if there's an error
@@ -63,8 +50,12 @@ export const UserProvider = ({ children }) => {
         loadUser();
     }, []);
 
-    // User data is now stored in database only (no localStorage)
-    // Only token is stored in localStorage for authentication
+    // Save to local storage whenever user changes
+    useEffect(() => {
+        if (user.isLoggedIn) {
+            localStorage.setItem('serviceProUser', JSON.stringify(user));
+        }
+    }, [user]);
 
     const updateProfile = async (updates) => {
         try {
@@ -84,33 +75,20 @@ export const UserProvider = ({ children }) => {
                         ...prev,
                         ...response.user,
                         location: normalizedLocation,
-                        isLoggedIn: true,
-                        userType: response.user.userType || prev.userType // Explicitly preserve userType
+                        isLoggedIn: true
                     }));
                 } else {
                     // Fallback: update with provided updates
-                    setUser(prev => ({ 
-                        ...prev, 
-                        ...updates,
-                        userType: updates.userType || prev.userType // Preserve userType
-                    }));
+                    setUser(prev => ({ ...prev, ...updates }));
                 }
             } else {
                 // Update local state only
-                setUser(prev => ({ 
-                    ...prev, 
-                    ...updates,
-                    userType: updates.userType || prev.userType // Preserve userType
-                }));
+                setUser(prev => ({ ...prev, ...updates }));
             }
         } catch (error) {
             console.error('Failed to update profile:', error);
             // Still update local state for immediate UI feedback
-            setUser(prev => ({ 
-                ...prev, 
-                ...updates,
-                userType: updates.userType || prev.userType // Preserve userType
-            }));
+            setUser(prev => ({ ...prev, ...updates }));
         }
     };
 

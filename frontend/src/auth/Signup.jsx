@@ -5,7 +5,7 @@ import { useUser } from '../context/UserContext';
 import './Login.css';
 
 const Signup = () => {
-  const [userType, setUserType] = useState('user'); // 'user', 'provider', 'admin'
+  const [isProvider, setIsProvider] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,8 +15,7 @@ const Signup = () => {
     businessName: '',
     bio: '',
     serviceAreas: '',
-    experience: '',
-    adminKey: '' // For admin signup
+    experience: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,6 +57,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
+      const userType = isProvider ? 'provider' : 'user';
       const registerData = {
         name: formData.name,
         email: formData.email,
@@ -67,7 +67,7 @@ const Signup = () => {
       };
 
       // Add provider-specific fields
-      if (userType === 'provider') {
+      if (isProvider) {
         if (formData.businessName) registerData.businessName = formData.businessName;
         if (formData.bio) registerData.bio = formData.bio;
         if (formData.serviceAreas) {
@@ -80,41 +80,22 @@ const Signup = () => {
         if (formData.experience) registerData.experience = parseInt(formData.experience) || 0;
       }
 
-      // Add admin key if admin signup
-      if (userType === 'admin') {
-        if (!formData.adminKey) {
-          setError('Admin key is required for admin registration');
-          setLoading(false);
-          return;
-        }
-        registerData.adminKey = formData.adminKey;
-      }
-
       const response = await authAPI.register(registerData);
-
+      
       // Store token
       localStorage.setItem('token', response.token);
-
-
-      console.log('Registration successful, user:', response.user); // Debug
-
-      // Update user context with all user data including userType
-      const userData = {
+      
+      // Update user context
+      updateProfile({
         ...response.user,
-        isLoggedIn: true,
-        userType: response.user.userType // Explicitly preserve userType
-      };
-
-      console.log('Updating user context with:', userData); // Debug
-      updateProfile(userData);
+        isLoggedIn: true
+      });
 
       // Navigate based on user type
-      if (response.user.userType === 'admin') {
-        navigate('/admin/dashboard', { replace: true });
-      } else if (response.user.userType === 'provider') {
-        navigate('/provider/home', { replace: true });
+      if (isProvider) {
+        navigate('/provider/home');
       } else {
-        navigate('/user/home', { replace: true });
+        navigate('/user/home');
       }
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
@@ -132,30 +113,23 @@ const Signup = () => {
         </div>
 
         <div className="toggle-container">
-          <button
+          <button 
             type="button"
-            className={`toggle-btn ${userType === 'user' ? 'active' : ''}`}
-            onClick={() => setUserType('user')}
+            className={`toggle-btn ${!isProvider ? 'active' : ''}`}
+            onClick={() => setIsProvider(false)}
           >
             User
           </button>
-          <button
+          <button 
             type="button"
-            className={`toggle-btn ${userType === 'provider' ? 'active' : ''}`}
-            onClick={() => setUserType('provider')}
+            className={`toggle-btn ${isProvider ? 'active' : ''}`}
+            onClick={() => setIsProvider(true)}
           >
-            Provider
-          </button>
-          <button
-            type="button"
-            className={`toggle-btn ${userType === 'admin' ? 'active' : ''}`}
-            onClick={() => setUserType('admin')}
-          >
-            Admin
+            Service Provider
           </button>
         </div>
 
-        {userType === 'provider' && (
+        {isProvider && (
           <div className="provider-info-box">
             <p className="provider-info-text">
               💼 Provide services to customers and grow your business
@@ -163,61 +137,53 @@ const Signup = () => {
           </div>
         )}
 
-        {userType === 'admin' && (
-          <div className="provider-info-box" style={{ background: '#fff3cd', borderColor: '#ffc107' }}>
-            <p className="provider-info-text" style={{ color: '#856404' }}>
-              🔐 Admin registration requires a valid admin key. Contact system administrator for access.
-            </p>
-          </div>
-        )}
-
         <form onSubmit={handleSignup} className="login-form">
           {error && <div className="error-message">{error}</div>}
-
+          
           <div className="form-group">
             <label>Full Name</label>
-            <input
-              type="text"
+            <input 
+              type="text" 
               name="name"
-              placeholder="Enter your full name"
+              placeholder="Enter your full name" 
               value={formData.name}
               onChange={handleChange}
-              required
+              required 
             />
           </div>
 
           <div className="form-group">
             <label>Email Address</label>
-            <input
-              type="email"
+            <input 
+              type="email" 
               name="email"
-              placeholder="Enter your email"
+              placeholder="Enter your email" 
               value={formData.email}
               onChange={handleChange}
-              required
+              required 
             />
           </div>
 
           <div className="form-group">
-            <label>Phone Number {(userType === 'provider' || userType === 'admin') && <span className="required">*</span>}</label>
-            <input
-              type="tel"
+            <label>Phone Number {isProvider && <span className="required">*</span>}</label>
+            <input 
+              type="tel" 
               name="phone"
-              placeholder="Enter your phone number"
+              placeholder="Enter your phone number" 
               value={formData.phone}
               onChange={handleChange}
-              required={userType === 'provider' || userType === 'admin'}
+              required={isProvider}
             />
           </div>
 
-          {userType === 'provider' && (
+          {isProvider && (
             <>
               <div className="form-group">
                 <label>Business/Company Name <span className="required">*</span></label>
-                <input
-                  type="text"
+                <input 
+                  type="text" 
                   name="businessName"
-                  placeholder="e.g., ABC Electricals, XYZ Plumbing Services"
+                  placeholder="e.g., ABC Electricals, XYZ Plumbing Services" 
                   value={formData.businessName}
                   onChange={handleChange}
                   required
@@ -226,10 +192,10 @@ const Signup = () => {
 
               <div className="form-group">
                 <label>Years of Experience</label>
-                <input
-                  type="number"
+                <input 
+                  type="number" 
                   name="experience"
-                  placeholder="e.g., 5"
+                  placeholder="e.g., 5" 
                   value={formData.experience}
                   onChange={handleChange}
                   min="0"
@@ -238,10 +204,10 @@ const Signup = () => {
 
               <div className="form-group">
                 <label>Service Areas</label>
-                <input
-                  type="text"
+                <input 
+                  type="text" 
                   name="serviceAreas"
-                  placeholder="e.g., Mumbai, Delhi, Bangalore (comma-separated)"
+                  placeholder="e.g., Mumbai, Delhi, Bangalore (comma-separated)" 
                   value={formData.serviceAreas}
                   onChange={handleChange}
                 />
@@ -250,7 +216,7 @@ const Signup = () => {
 
               <div className="form-group">
                 <label>Bio/Description</label>
-                <textarea
+                <textarea 
                   name="bio"
                   placeholder="Tell customers about your business, experience, and expertise..."
                   value={formData.bio}
@@ -261,49 +227,34 @@ const Signup = () => {
               </div>
             </>
           )}
-
-          {userType === 'admin' && (
-            <div className="form-group">
-              <label>Admin Key <span className="required">*</span></label>
-              <input
-                type="password"
-                name="adminKey"
-                placeholder="Enter admin registration key"
-                value={formData.adminKey}
-                onChange={handleChange}
-                required
-              />
-              <small className="form-hint">Required for admin account creation</small>
-            </div>
-          )}
-
+          
           <div className="form-group">
             <label>Password</label>
-            <input
-              type="password"
+            <input 
+              type="password" 
               name="password"
-              placeholder="Enter your password (min 6 characters)"
+              placeholder="Enter your password (min 6 characters)" 
               value={formData.password}
               onChange={handleChange}
-              required
+              required 
               minLength={6}
             />
           </div>
 
           <div className="form-group">
             <label>Confirm Password</label>
-            <input
-              type="password"
+            <input 
+              type="password" 
               name="confirmPassword"
-              placeholder="Confirm your password"
+              placeholder="Confirm your password" 
               value={formData.confirmPassword}
               onChange={handleChange}
-              required
+              required 
             />
           </div>
 
           <button type="submit" className="login-submit-btn" disabled={loading}>
-            {loading ? 'Creating account...' : `Sign up as ${userType.charAt(0).toUpperCase() + userType.slice(1)}`}
+            {loading ? 'Creating account...' : `Sign up as ${isProvider ? 'Provider' : 'User'}`}
           </button>
         </form>
 

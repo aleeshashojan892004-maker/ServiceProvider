@@ -84,7 +84,7 @@ const ServiceDetails = () => {
     }
   }, [selectedTime, date, serviceData]);
 
-  const handleBookNow = async () => {
+  const handleBookNow = () => {
     if (!selectedTime) {
       alert("Please select a time slot for the service.");
       return;
@@ -92,14 +92,15 @@ const ServiceDetails = () => {
 
     if (!serviceData) return;
 
-    // Add service to cart (database)
-    const cartItem = {
+    const booking = {
+      serviceId: id,
+      date: date.toDateString(),
+      time: selectedTime,
       service: serviceData,
-      id: serviceData.id,
-      serviceId: serviceData.id
+      price: serviceData.price
     };
 
-    await addToCart(cartItem);
+    addToCart(booking);
     navigate('/user/cart');
   };
 

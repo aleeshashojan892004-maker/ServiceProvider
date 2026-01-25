@@ -1,3 +1,4 @@
+import React from 'react'
 import { Routes, Route } from 'react-router-dom';
 import UserLanding from "./user/UserLanding.jsx";
 import UserHome from "./user/UserHome.jsx";
@@ -10,8 +11,6 @@ import Cart from "./user/Cart.jsx";
 import Profile from "./user/Profile.jsx";
 import Orders from "./user/Orders.jsx";
 import OrderDetails from "./user/OrderDetails.jsx";
-import AdminDashboard from "./admin/AdminDashboard.jsx";
-import AdminRedirect from "./components/AdminRedirect.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { UserProvider } from "./context/UserContext.jsx";
 import './App.css'
@@ -29,7 +28,6 @@ function AppRoutes() {
       <Route path="/user/orders/:id" element={<OrderDetails />} />
       <Route path="/provider/home" element={<ProviderHome />} />
       <Route path="/provider/profile" element={<ProviderProfile />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/service/:id" element={<ServiceDetails />} />
     </Routes>
   )
@@ -39,9 +37,7 @@ function App() {
   return (
     <UserProvider>
       <CartProvider>
-        <AdminRedirect>
-          <AppRoutes />
-        </AdminRedirect>
+        <AppRoutes />
       </CartProvider>
     </UserProvider>
   )

@@ -34,14 +34,6 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
-
-# Database
-*.sqlite
-*.sqlite3
-*.db
-database.sqlite
-users.db
-
-# Python (remnants)
 __pycache__/
 *.pyc
+users.db

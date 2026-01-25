@@ -20,3 +20,5 @@ root.render(
   </React.StrictMode>
 )
 
+// Log to confirm app is loading
+console.log('✅ React app mounted successfully!')

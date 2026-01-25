@@ -10,16 +10,4 @@ export default defineConfig({
       },
     }),
   ],
-  server: {
-    host: '0.0.0.0', // Allow network access
-    port: 5173,
-    strictPort: false,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
 })

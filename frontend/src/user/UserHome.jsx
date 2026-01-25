@@ -278,21 +278,8 @@ const UserHome = () => {
                         <span className="review-count">({formatReviews(service.reviews)})</span>
                       </div>
                       <div className="price-row">
-                        <div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--gray-500)', fontWeight: 500, marginBottom: '0.25rem' }}>
-                            Starts at
-                          </div>
-                          <span className="price">{formatPrice(service.price)}</span>
-                        </div>
-                        <button 
-                          className="add-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/service/${service._id || service.id}`);
-                          }}
-                        >
-                          View Details
-                        </button>
+                        <span className="price">Starts at {formatPrice(service.price)}</span>
+                        <button className="add-btn">View</button>
                       </div>
                     </div>
                   </motion.div>
