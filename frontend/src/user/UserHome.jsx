@@ -41,7 +41,7 @@ const UserHome = () => {
       try {
         const searchParams = new URLSearchParams(location.search);
         const searchQuery = searchParams.get('search');
-        
+
         const filtersToApply = {
           ...filters,
           search: searchQuery || ''
@@ -49,7 +49,7 @@ const UserHome = () => {
 
         const response = await servicesAPI.getServices(filtersToApply);
         setServices(response.services || []);
-        
+
         if (searchQuery) {
           setActiveCategory(searchQuery);
         } else {
@@ -182,8 +182,8 @@ const UserHome = () => {
                 <div className="filters-content">
                   <div className="filter-group">
                     <label>Category</label>
-                    <select 
-                      value={filters.category} 
+                    <select
+                      value={filters.category}
                       onChange={(e) => handleFilterChange('category', e.target.value)}
                     >
                       <option value="">All Categories</option>
@@ -219,8 +219,8 @@ const UserHome = () => {
 
                   <div className="filter-group">
                     <label>Minimum Rating</label>
-                    <select 
-                      value={filters.minRating} 
+                    <select
+                      value={filters.minRating}
                       onChange={(e) => handleFilterChange('minRating', e.target.value)}
                     >
                       <option value="">Any Rating</option>
@@ -232,8 +232,8 @@ const UserHome = () => {
 
                   <div className="filter-group">
                     <label>Sort By</label>
-                    <select 
-                      value={filters.sortBy} 
+                    <select
+                      value={filters.sortBy}
                       onChange={(e) => handleFilterChange('sortBy', e.target.value)}
                     >
                       <option value="">Default</option>
@@ -278,7 +278,7 @@ const UserHome = () => {
                         <span className="review-count">({formatReviews(service.reviews)})</span>
                       </div>
                       <div className="price-row">
-                        <span className="price">Starts at {formatPrice(service.price)}</span>
+                        <span className="price"><span>Starts at</span> {formatPrice(service.price)}</span>
                         <button className="add-btn">View</button>
                       </div>
                     </div>
